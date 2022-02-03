@@ -1,6 +1,7 @@
 package ru.vitasoft.storage;
 
 import ru.vitasoft.sql.SqlHelper;
+import ru.vitasoft.util.ExcelUtils;
 
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -11,19 +12,23 @@ public class SqlStorage {
 
     public SqlStorage(String dbUrl, String dbUser, String dbPassword) {
         try {
-            Class.forName("org.postgresql.Driver");
+            //Class.forName("org.postgresql.Driver");
+            Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
         } catch (ClassNotFoundException e) {
             throw new IllegalStateException(e);
         }
         sqlHelper = new SqlHelper(() -> DriverManager.getConnection(dbUrl, dbUser, dbPassword));
     }
 
-    public void saveTableData(List<List<String>> tableData) {
+    public void saveTableData(String tableName, List<List<String>> tableData) {
         sqlHelper.transactionalExecute(conn -> {
-            try (PreparedStatement ps = conn.prepareStatement("INSERT INTO resume (uuid, full_name) VALUES (?,?)")) {
-                ps.setString(1, tableData.get(0).get(0));
-                ps.setString(2, tableData.get(1).get(1));
-                ps.execute();
+            try (PreparedStatement ps = conn.prepareStatement("INSERT INTO " + tableName + " (" + ExcelUtils.getFieldsStr() + ") VALUES (" + ExcelUtils.getParamsStr() + ")")) {
+                for (List<String> row : tableData) {
+                    for (int i = 1; i <= row.size(); i++) {
+                        ps.setString(i, row.get(i - 1));
+                    }
+                    ps.execute();
+                }
             }
             return null;
         });
