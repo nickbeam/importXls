@@ -10,27 +10,78 @@ import java.util.*;
 import static org.apache.poi.ss.usermodel.CellType.*;
 
 public class ExcelUtils {
-    public static String getDbTableName(Sheet sheet) {
-        if (sheet.getRow(2).getCell(0).getCellType() != STRING) {
-            System.out.println("DB table name is empty, check xls file");
+    private static String dbUrl = "";
+    private static String dbUser = "";
+    private static String dbPassword = "";
+    private static String dbTable = "";
+    //private static Sheet SHEET;
+    private static List<Field> dbFields = new ArrayList<>();
+    private static List<List<String>> tableData = new ArrayList<>();
+
+    private static boolean containString(Sheet sheet, int row, int col) {
+        if (sheet.getRow(row).getCell(col).getCellType() != STRING) {
+            System.out.println("Cell at row: " + row + " and column: " + col + " must contain string!");
             System.exit(1);
         }
-        return sheet.getRow(2).getCell(0).getStringCellValue();
+        return true;
+    }
+
+    public static String getDbUrl(Sheet sheet) {
+        if (!dbUrl.isEmpty()) {
+            return dbUrl;
+        } else if (containString(sheet, 0,1 )) {
+            dbUrl =  sheet.getRow(0).getCell(1).getStringCellValue();
+        }
+        return dbUrl;
+    }
+
+    public static String getDbUser(Sheet sheet) {
+        if (!dbUser.isEmpty()) {
+            return dbUser;
+        } else if (containString(sheet, 1,1 )) {
+            dbUser =  sheet.getRow(1).getCell(1).getStringCellValue();
+        }
+        return dbUser;
+    }
+
+    public static String getDbPassword(Sheet sheet) {
+        if (!dbPassword.isEmpty()) {
+            return dbPassword;
+        } else if (containString(sheet, 2,1 )) {
+            dbPassword =  sheet.getRow(2).getCell(1).getStringCellValue();
+        }
+        return dbPassword;
+    }
+
+    public static String getDbTableName(Sheet sheet) {
+        if (!dbTable.isEmpty()) {
+            return dbTable;
+        } else if (containString(sheet, 3,0 )) {
+            dbTable =  sheet.getRow(3).getCell(0).getStringCellValue();
+        }
+        return dbTable;
     }
 
     public static List<Field> getFields(Sheet sheet) {
-        List<Field> fields = new ArrayList<>();
+        if (!dbFields.isEmpty()) {
+            return dbFields;
+        }
 
+        List<Field> fields = new ArrayList<>();
         for (int curCol = 1; curCol <= getColCount(sheet); curCol++) {
+            if (getCellStringData(sheet, curCol, 3).isEmpty()) {
+                continue;
+            }
             fields.add(new Field(
-                    getCellStringData(sheet, curCol, 2),    //name
-                    getCellStringData(sheet, curCol, 3),    //defValue
-                    getCellStringData(sheet, curCol, 5),    //type
+                    getCellStringData(sheet, curCol, 3),    //name
+                    getCellStringData(sheet, curCol, 4),    //defValue
+                    getCellStringData(sheet, curCol, 6),    //type
                     false,    //uniq
                     curCol    //colNumber
             ));
         }
-        return fields;
+        dbFields = fields;
+        return dbFields;
     }
 
     public static String getCellStringData(Sheet sheet, int colNum, int rowNum) {
@@ -53,13 +104,13 @@ public class ExcelUtils {
                     cellData = cell.getStringCellValue();
                     break;
                 case NUMERIC:
-                    System.out.println("NUMERIC");
+                    cellData = Double.toString(cell.getNumericCellValue());
                     break;
                 case BOOLEAN:
-                    System.out.println("BOOLEAN");
+                    cellData = Boolean.toString(cell.getBooleanCellValue());
                     break;
                 case FORMULA:
-                    System.out.println("FORMULA");
+                    cellData = cell.getCellFormula();
                     break;
                 default:
                     System.out.println("default");
@@ -71,27 +122,28 @@ public class ExcelUtils {
     }
 
     public static List<List<String>> getTableData(Sheet sheet) {
-        List<List<String>> tableData = new ArrayList<>();
-        for (int curRow = 8; curRow <= getRowCount(sheet); curRow++) {
-            tableData.add(getRowData(sheet.getRow(curRow)));
+        if (!tableData.isEmpty()) {
+            return tableData;
         }
+
+        List<List<String>> td = new ArrayList<>();
+        for (int curRow = 9; curRow <= getRowCount(sheet); curRow++) {
+            td.add(getRowData(sheet.getRow(curRow)));
+        }
+        tableData = td;
         return tableData;
     }
 
     public static List<String> getRowData(Row row) {
         List<String> rowData = new ArrayList<>();
-        for (Cell cell : row) {
-            if (cell.getColumnIndex() == 0) {   //Skip first column cell data
-                continue;
-            }
-            cell.setCellType(STRING);
-            rowData.add(getCellStringData(cell));
+        for (int cell = 1; cell <= dbFields.size(); cell++) {
+            rowData.add(getCellStringData(row.getCell(cell)));
         }
         return rowData;
     }
 
     public static int getColCount(Sheet sheet) {
-        return sheet.getRow(2).getLastCellNum();
+        return sheet.getRow(3).getLastCellNum();
     }
 
     public static int getRowCount(Sheet sheet) {

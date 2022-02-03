@@ -16,6 +16,9 @@ public class Main {
             Workbook wb = new HSSFWorkbook(fis);
             Sheet sheet = wb.getSheetAt(0);     //creating a Sheet object to retrieve object
 
+            String dbUrl = ExcelUtils.getDbUrl(sheet);
+            String dbUser = ExcelUtils.getDbUser(sheet);
+            String dbPassword = ExcelUtils.getDbPassword(sheet);
             String dbTN = ExcelUtils.getDbTableName(sheet);
             List<Field> fields = ExcelUtils.getFields(sheet);
             List<List<String>> tableData = ExcelUtils.getTableData(sheet);
