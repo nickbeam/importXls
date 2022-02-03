@@ -70,13 +70,13 @@ public class ExcelUtils {
         }
         List<Field> fields = new ArrayList<>();
         for (int curCol = 1; curCol <= getColCount(); curCol++) {
-            if (getCellStringData(curCol, 3).isEmpty()) {
+            if (getCellData(curCol, 3).isEmpty()) {
                 continue;
             }
             fields.add(new Field(
-                    getCellStringData(curCol, 3),    //name
-                    getCellStringData(curCol, 4),    //defValue
-                    getCellStringData(curCol, 6),    //type
+                    getCellData(curCol, 3),    //name
+                    getCellData(curCol, 4),    //defValue
+                    getCellData(curCol, 6),    //type
                     false,    //uniq
                     curCol    //colNumber
             ));
@@ -117,10 +117,13 @@ public class ExcelUtils {
         return paramsStr;
     }
 
-    public static String getCellStringData(int colNum, int rowNum) {
+    public static String getCellData(int colNum, int rowNum) {
         Row row = excelSheet.getRow(rowNum);
         Cell cell = row.getCell(colNum);
         String cellData = "";
+        if (cell == null) {
+            return cellData;
+        }
         try {
             cellData = cell.getStringCellValue();
         } catch (Exception e) {
@@ -129,12 +132,17 @@ public class ExcelUtils {
         return cellData;
     }
 
-    public static String getCellStringData(Cell cell) {
+    public static String getCellData(Cell cell) {
         String cellData = "";
+        if (cell == null) {
+            return cellData;
+        }
         try {
             switch (cell.getCellType()) {
                 case STRING:
                     cellData = cell.getStringCellValue();
+                    break;
+                case BLANK:
                     break;
                 case NUMERIC:
                     cellData = Double.toString(cell.getNumericCellValue());
@@ -170,7 +178,7 @@ public class ExcelUtils {
     public static List<String> getRowData(Row row) {
         List<String> rowData = new ArrayList<>();
         for (int cell = 1; cell <= dbTableFields.size(); cell++) {
-            rowData.add(getCellStringData(row.getCell(cell)));
+            rowData.add(getCellData(row.getCell(cell)));
         }
         return rowData;
     }
