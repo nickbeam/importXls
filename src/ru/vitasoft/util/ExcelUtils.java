@@ -133,10 +133,10 @@ public class ExcelUtils {
         return cellData;
     }
 
-    public static String getCellData(Cell cell) {
+    public static String getCellData(Cell cell, String defaultValue) {
         String cellData = "";
         if (cell == null) {
-            return cellData;
+            return defaultValue;
         }
         try {
             switch (cell.getCellType()) {
@@ -160,10 +160,10 @@ public class ExcelUtils {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return cellData;
+        return cellData.isEmpty() ? defaultValue : cellData;
     }
 
-    public static List<List<String>> getTableData(Sheet sheet) {
+    public static List<List<String>> getTableData() {
         if (dbTableFields.isEmpty()) {
             getFields();
         }
@@ -182,7 +182,7 @@ public class ExcelUtils {
     public static List<String> getRowData(Row row) {
         List<String> rowData = new ArrayList<>();
         for (int cell = 1; cell <= dbTableFields.size(); cell++) {
-            rowData.add(getCellData(row.getCell(cell)));
+            rowData.add(getCellData(row.getCell(cell), dbTableFields.get(cell - 1).getDefValue()));
         }
         return rowData;
     }

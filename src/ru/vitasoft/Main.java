@@ -19,7 +19,7 @@ public class Main {
             Sheet sheet = wb.getSheetAt(0);     //creating a Sheet object to retrieve object
 
             SqlStorage sqlStorage = new SqlStorage(getDbUrl(sheet), getDbUser(), getDbPassword());
-            sqlStorage.saveTableData(getDbTableName(), getTableData(sheet));
+            sqlStorage.saveTableData(getDbTableName(), getTableData());
 
         } catch (Exception e) {
             e.printStackTrace();

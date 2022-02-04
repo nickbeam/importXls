@@ -12,7 +12,7 @@ public class ArgsUtils {
         }
         File inputFile = new File(args[0]);
         if (!inputFile.isFile()) {
-            throw new ArgumentsException("Input file not found");
+            throw new ArgumentsException("Excel file not found");
         }
         return inputFile.getAbsolutePath();
     }
