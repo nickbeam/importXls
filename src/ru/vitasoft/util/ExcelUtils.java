@@ -28,7 +28,8 @@ public class ExcelUtils {
         return true;
     }
 
-    public static String getDbUrl() {
+    public static String getDbUrl(Sheet sheet) {
+        setSheet(sheet);
         if (!dbUrl.isEmpty()) {
             return dbUrl;
         } else if (containString(0,1 )) {
@@ -162,7 +163,10 @@ public class ExcelUtils {
         return cellData;
     }
 
-    public static List<List<String>> getTableData() {
+    public static List<List<String>> getTableData(Sheet sheet) {
+        if (dbTableFields.isEmpty()) {
+            getFields();
+        }
         if (!dbTableData.isEmpty()) {
             return dbTableData;
         }
