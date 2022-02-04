@@ -12,6 +12,7 @@ public class SqlStorage {
 
     public SqlStorage(String dbUrl, String dbUser, String dbPassword) {
         try {
+            //TODO Implement insert data to PostgreSQL DB
             //Class.forName("org.postgresql.Driver");
             Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
         } catch (ClassNotFoundException e) {
