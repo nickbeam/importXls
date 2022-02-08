@@ -1,4 +1,4 @@
-package ru.vitasoft.sql;
+package ru.vitasoft.importxls.sql;
 
 import java.sql.Connection;
 import java.sql.SQLException;

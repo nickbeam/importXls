@@ -1,6 +1,6 @@
-package ru.vitasoft.util;
+package ru.vitasoft.importxls.util;
 
-import ru.vitasoft.exception.ArgumentsException;
+import ru.vitasoft.importxls.exception.ArgumentsException;
 
 import java.io.File;
 

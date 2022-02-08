@@ -1,4 +1,4 @@
-package ru.vitasoft.exception;
+package ru.vitasoft.importxls.exception;
 
 public class StorageException extends RuntimeException {
     private final String uuid;

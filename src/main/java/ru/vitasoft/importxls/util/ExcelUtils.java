@@ -1,9 +1,9 @@
-package ru.vitasoft.util;
+package ru.vitasoft.importxls.util;
 
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
-import ru.vitasoft.model.Field;
+import ru.vitasoft.importxls.model.Field;
 
 import java.util.*;
 

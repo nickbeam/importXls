@@ -1,7 +1,7 @@
-package ru.vitasoft.sql;
+package ru.vitasoft.importxls.sql;
 
-import ru.vitasoft.exception.ExistStorageException;
-import ru.vitasoft.exception.StorageException;
+import ru.vitasoft.importxls.exception.ExistStorageException;
+import ru.vitasoft.importxls.exception.StorageException;
 
 import java.sql.SQLException;
 

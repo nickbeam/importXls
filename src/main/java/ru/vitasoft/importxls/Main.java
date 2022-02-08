@@ -1,13 +1,13 @@
-package ru.vitasoft;
+package ru.vitasoft.importxls;
 
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.*;
-import ru.vitasoft.storage.SqlStorage;
+import ru.vitasoft.importxls.storage.SqlStorage;
 
 import java.io.FileInputStream;
 
-import static ru.vitasoft.util.ArgsUtils.checkArgs;
-import static ru.vitasoft.util.ExcelUtils.*;
+import static ru.vitasoft.importxls.util.ArgsUtils.checkArgs;
+import static ru.vitasoft.importxls.util.ExcelUtils.*;
 
 public class Main {
 
@@ -20,7 +20,7 @@ public class Main {
 
             SqlStorage sqlStorage = new SqlStorage(getDbUrl(sheet), getDbUser(), getDbPassword());
             sqlStorage.saveTableData(getDbTableName(), getTableData());
-
+            System.out.println("В таблицу: " + getDbTableName() + " загружено записей: " + getTableData().size());
         } catch (Exception e) {
             e.printStackTrace();
         }

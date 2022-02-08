@@ -1,7 +1,7 @@
-package ru.vitasoft.storage;
+package ru.vitasoft.importxls.storage;
 
-import ru.vitasoft.sql.SqlHelper;
-import ru.vitasoft.util.ExcelUtils;
+import ru.vitasoft.importxls.sql.SqlHelper;
+import ru.vitasoft.importxls.util.ExcelUtils;
 
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -10,11 +10,13 @@ import java.util.List;
 public class SqlStorage {
     private final SqlHelper sqlHelper;
 
+    private String getDbType(String dbUrl) {
+        return dbUrl.contains("postgresql") ? "org.postgresql.Driver" : "com.microsoft.sqlserver.jdbc.SQLServerDriver";
+    }
+
     public SqlStorage(String dbUrl, String dbUser, String dbPassword) {
         try {
-            //TODO Implement insert data to PostgreSQL DB
-            //Class.forName("org.postgresql.Driver");
-            Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
+            Class.forName(getDbType(dbUrl));
         } catch (ClassNotFoundException e) {
             throw new IllegalStateException(e);
         }

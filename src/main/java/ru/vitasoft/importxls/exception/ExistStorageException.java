@@ -1,4 +1,4 @@
-package ru.vitasoft.exception;
+package ru.vitasoft.importxls.exception;
 
 public class ExistStorageException extends StorageException {
     public ExistStorageException(String uuid) {
