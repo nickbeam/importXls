@@ -5,8 +5,10 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import ru.vitasoft.importxls.model.Field;
 import ru.vitasoft.importxls.sql.SqlHelper;
+import ru.vitasoft.importxls.util.DateTimeUtils;
 import ru.vitasoft.importxls.util.ExcelUtils;
 
+import java.sql.Date;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.util.List;
@@ -57,7 +59,7 @@ public class SqlStorage {
                                 ps.setDouble(i, getDouble(row, i));
                                 break;
                             case "date":
-                                //ps.setDate(i, getDate(row, i));
+                                ps.setDate(i, getDate(row, i));
                                 break;
                             case "datetime":
                                 //ps.setTimestamp(i, getTimeStamp(row, i));
@@ -86,6 +88,10 @@ public class SqlStorage {
 
     private static boolean isNumeric(String str){
         return str != null && str.matches("[0-9.]+");
+    }
+
+    private Date getDate(List<String> row, int i) {
+        return DateTimeUtils.getDate(row.get(i - 1));
     }
 
     private Boolean getBoolean(List<String> row, int i) {
