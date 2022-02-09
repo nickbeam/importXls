@@ -63,6 +63,7 @@ public class SqlStorage {
                                 //ps.setTimestamp(i, getTimeStamp(row, i));
                                 break;
                             case "boolean":
+                                ps.setBoolean(i, getBoolean(row, i));
                                 break;
                             case "char":
                             case "text":
@@ -85,6 +86,13 @@ public class SqlStorage {
 
     private static boolean isNumeric(String str){
         return str != null && str.matches("[0-9.]+");
+    }
+
+    private Boolean getBoolean(List<String> row, int i) {
+        if (isNumeric(row.get(i - 1).trim())) {
+            return Integer.parseInt(row.get(i - 1).trim()) == 1;
+        }
+        return row.get(i - 1).contains("true");
     }
 
     private Short getShort(List<String> row, int i) {
