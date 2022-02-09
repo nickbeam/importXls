@@ -26,7 +26,7 @@ public class Main {
             Sheet sheet = wb.getSheetAt(0);     //creating a Sheet object to retrieve object
             log.log(Level.DEBUG, getCurrentDateTime() + " - Загрузка файла: " + Arrays.toString(args));
             SqlStorage sqlStorage = new SqlStorage(getDbUrl(sheet), getDbUser(), getDbPassword());
-            sqlStorage.saveTableData(getDbTableName(), getTableData());
+            sqlStorage.saveTableData(getDbTableName(), getFields(), getTableData());
             System.out.println("В таблицу: " + getDbTableName() + " загружено записей: " + getTableData().size());
         } catch (Exception e) {
             e.printStackTrace();
