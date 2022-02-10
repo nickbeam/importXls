@@ -83,8 +83,8 @@ public class SqlStorage {
                         insRowCount.getAndIncrement();
                     }
                 } catch (Exception e) {
-                    log.log(Level.DEBUG, sb);
-                    System.out.println(sb);
+                    log.log(Level.DEBUG, sb + " по причине: " + e.getMessage());
+                    System.out.println(sb + " по причине: " + e.getMessage());
                 }
                 return null;
             });
