@@ -34,7 +34,7 @@ public class SqlStorage {
     public int saveTableData(String tableName, List<Field> fields, List<List<String>> tableData) {
         StringBuilder sb = new StringBuilder();
         int curRow = 0;
-        AtomicInteger insertedRow = new AtomicInteger();
+        AtomicInteger insRowCount = new AtomicInteger();
         for (List<String> row : tableData) {
             sb.delete(0, sb.length());
             sb.append("Ошибка в строке: ").append(++curRow).append(" | ");
@@ -80,7 +80,7 @@ public class SqlStorage {
                         sb.append(row.get(i - 1)).append(" | ");
                     }
                     if (ps.executeUpdate() > 0) {
-                        insertedRow.getAndIncrement();
+                        insRowCount.getAndIncrement();
                     }
                 } catch (Exception e) {
                     log.log(Level.DEBUG, sb);
@@ -89,7 +89,7 @@ public class SqlStorage {
                 return null;
             });
         }
-        return insertedRow.intValue();
+        return insRowCount.intValue();
     }
 
     private static boolean isNumeric(String str) {

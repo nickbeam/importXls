@@ -3,12 +3,12 @@ package ru.vitasoft.importxls.model;
 public class Field {
     private String name;
     private String defValue;
-    private Boolean required;
+    private boolean required;
     private String type;
     private boolean uniq;
-    private Integer colNumber;
+    private int colNumber;
 
-    public Field(String name, String defValue, Boolean required, String type, boolean uniq, Integer colNumber) {
+    public Field(String name, String defValue, boolean required, String type, boolean uniq, int colNumber) {
         this.name = name;
         this.defValue = defValue;
         this.required = required;
@@ -25,7 +25,7 @@ public class Field {
         return defValue;
     }
 
-    public Boolean getRequired() {
+    public boolean getRequired() {
         return required;
     }
 
@@ -37,7 +37,7 @@ public class Field {
         return uniq;
     }
 
-    public Integer getColNumber() {
+    public int getColNumber() {
         return colNumber;
     }
 
@@ -49,7 +49,7 @@ public class Field {
         this.defValue = defValue;
     }
 
-    public void setRequired(Boolean required) {
+    public void setRequired(boolean required) {
         this.required = required;
     }
 
@@ -61,7 +61,7 @@ public class Field {
         this.uniq = uniq;
     }
 
-    public void setColNumber(Integer colNumber) {
+    public void setColNumber(int colNumber) {
         this.colNumber = colNumber;
     }
 

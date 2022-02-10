@@ -1,5 +1,8 @@
 package ru.vitasoft.importxls.util;
 
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
@@ -19,6 +22,8 @@ public class ExcelUtils {
     private static String fieldsStr = "";
     private static String paramsStr = "";
     private static List<List<String>> dbTableData = new ArrayList<>();
+    private static Map<String, Set<String>> uniqDataMap = new HashMap<>();
+    private static final Logger log = LogManager.getLogger();
 
     private static boolean containString(int row, int col) {
         if (excelSheet.getRow(row).getCell(col).getCellType() != STRING) {
@@ -74,14 +79,18 @@ public class ExcelUtils {
             if (getCellData(curCol, 3).isEmpty()) {
                 continue;
             }
-            fields.add(new Field(
+            Field field = new Field(
                     getCellData(curCol, 3),    //name
                     getCellData(curCol, 4),    //defValue
                     getCellBoolean(curCol, 5),    //required
                     getCellData(curCol, 6),    //type
-                    false,    //uniq
+                    getCellBoolean(curCol, 8),    //uniq
                     curCol    //colNumber
-            ));
+            );
+            fields.add(field);
+            if (field.isUniq()) {
+                uniqDataMap.put(field.getName(), new HashSet<>());
+            }
         }
         dbTableFields = fields;
         return dbTableFields;
@@ -146,13 +155,13 @@ public class ExcelUtils {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return cellData.contains("Да");
+        return cellData.toLowerCase().contains("да");
     }
 
-    public static String getCellData(Cell cell, String defaultValue, boolean required) {
+    public static String getCellData(Cell cell, Field field) {
         String cellData = "";
-        if (cell == null && !required) {
-            return defaultValue;
+        if (cell == null && !field.getRequired()) {
+            return field.getDefValue();
         } else if (cell == null) {
             return null;
         }
@@ -162,7 +171,7 @@ public class ExcelUtils {
                     cellData = cell.getStringCellValue();
                     break;
                 case BLANK:
-                    return required ? null : defaultValue;
+                    return field.getRequired() ? null : field.getDefValue();
                 case NUMERIC:
                     cellData = Double.toString(cell.getNumericCellValue());
                     break;
@@ -172,13 +181,28 @@ public class ExcelUtils {
                 case FORMULA:
                     cellData = cell.getCellFormula();
                     break;
-                default:
-                    System.out.println("default");
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return cellData.isEmpty() ? defaultValue : cellData;
+        if (field.isUniq() && isUniqCellData(field, cellData)) {
+            return null;
+        }
+        return cellData.isEmpty() ? field.getDefValue() : cellData;
+    }
+
+    private static boolean isUniqCellData(Field field, String cellData) {
+        if (field.isUniq() && uniqDataMap.get(field.getName()).contains(cellData)) {
+            String message = "Не уникальное значение: " + cellData + " в поле: " + field.getName();
+            log.log(Level.DEBUG, message);
+            System.out.println(message);
+            return true;
+        } else if (field.isUniq()) {
+            Set<String> uniqValues = uniqDataMap.get(field.getName());
+            uniqValues.add(cellData);
+            uniqDataMap.put(field.getName(), uniqValues);
+        }
+        return false;
     }
 
     public static List<List<String>> getTableData() {
@@ -207,7 +231,7 @@ public class ExcelUtils {
         String currentCellData;
         for (int cell = 1; cell <= dbTableFields.size(); cell++) {
             currentField = dbTableFields.get(cell - 1);
-            currentCellData = getCellData(row.getCell(cell), currentField.getDefValue(), currentField.getRequired());
+            currentCellData = getCellData(row.getCell(cell), currentField);
             if (currentCellData != null) {
                 rowData.add(currentCellData);
             } else {
