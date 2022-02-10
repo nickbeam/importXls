@@ -26,8 +26,8 @@ public class Main {
             Sheet sheet = wb.getSheetAt(0);     //creating a Sheet object to retrieve object
             log.log(Level.DEBUG, getCurrentDateTime() + " - Загрузка файла: " + Arrays.toString(args));
             SqlStorage sqlStorage = new SqlStorage(getDbUrl(sheet), getDbUser(), getDbPassword());
-            sqlStorage.saveTableData(getDbTableName(), getFields(), getTableData());
-            System.out.println("В таблицу: " + getDbTableName() + " загружено записей: " + getTableData().size());
+            int insertedRows = sqlStorage.saveTableData(getDbTableName(), getFields(), getTableData());
+            System.out.println("В таблицу: " + getDbTableName() + " загружено записей: " + insertedRows);
         } catch (Exception e) {
             e.printStackTrace();
         }
