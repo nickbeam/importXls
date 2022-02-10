@@ -77,6 +77,7 @@ public class ExcelUtils {
             fields.add(new Field(
                     getCellData(curCol, 3),    //name
                     getCellData(curCol, 4),    //defValue
+                    getCellBoolean(curCol, 5),    //required
                     getCellData(curCol, 6),    //type
                     false,    //uniq
                     curCol    //colNumber
@@ -133,18 +134,35 @@ public class ExcelUtils {
         return cellData;
     }
 
-    public static String getCellData(Cell cell, String defaultValue) {
+    public static Boolean getCellBoolean(int colNum, int rowNum) {
+        Row row = excelSheet.getRow(rowNum);
+        Cell cell = row.getCell(colNum);
         String cellData = "";
         if (cell == null) {
-            return defaultValue;
+            return false;
         }
         try {
-            switch (cell.getCellType()) {
+            cellData = cell.getStringCellValue();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return cellData.contains("Да");
+    }
+
+    public static String getCellData(Cell cell, String defaultValue, boolean required) {
+        String cellData = "";
+        if (cell == null && !required) {
+            return defaultValue;
+        } else if (cell == null) {
+            return null;
+        }
+        try {
+            switch (Objects.requireNonNull(cell).getCellType()) {
                 case STRING:
                     cellData = cell.getStringCellValue();
                     break;
                 case BLANK:
-                    break;
+                    return required ? null : defaultValue;
                 case NUMERIC:
                     cellData = Double.toString(cell.getNumericCellValue());
                     break;
@@ -172,8 +190,12 @@ public class ExcelUtils {
         }
 
         List<List<String>> td = new ArrayList<>();
+        List<String> currentRowData;
         for (int curRow = 9; curRow <= getRowCount(); curRow++) {
-            td.add(getRowData(excelSheet.getRow(curRow)));
+            currentRowData = getRowData(excelSheet.getRow(curRow));
+            if (currentRowData != null) {
+                td.add(currentRowData);
+            }
         }
         dbTableData = td;
         return dbTableData;
@@ -181,8 +203,16 @@ public class ExcelUtils {
 
     public static List<String> getRowData(Row row) {
         List<String> rowData = new ArrayList<>();
+        Field currentField;
+        String currentCellData;
         for (int cell = 1; cell <= dbTableFields.size(); cell++) {
-            rowData.add(getCellData(row.getCell(cell), dbTableFields.get(cell - 1).getDefValue()));
+            currentField = dbTableFields.get(cell - 1);
+            currentCellData = getCellData(row.getCell(cell), currentField.getDefValue(), currentField.getRequired());
+            if (currentCellData != null) {
+                rowData.add(currentCellData);
+            } else {
+                return null;
+            }
         }
         return rowData;
     }
