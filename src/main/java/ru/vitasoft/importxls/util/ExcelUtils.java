@@ -21,8 +21,9 @@ public class ExcelUtils {
     private static List<Field> dbTableFields = new ArrayList<>();
     private static String fieldsStr = "";
     private static String paramsStr = "";
+    private static final String[] TYPES = {"smallint", "int", "int8", "serial", "integer", "bigserial", "bigint"};
     private static List<List<String>> dbTableData = new ArrayList<>();
-    private static Map<String, Set<String>> uniqDataMap = new HashMap<>();
+    private static final Map<String, Set<String>> UNIQ_DATA_MAP = new HashMap<>();
     private static final Logger log = LogManager.getLogger();
 
     private static boolean containString(int row, int col) {
@@ -83,13 +84,13 @@ public class ExcelUtils {
                     getCellData(curCol, 3),    //name
                     getCellData(curCol, 4),    //defValue
                     getCellBoolean(curCol, 5),    //required
-                    getCellData(curCol, 6),    //type
+                    getCellData(curCol, 6).toLowerCase(),    //type
                     getCellBoolean(curCol, 8),    //uniq
                     curCol    //colNumber
             );
             fields.add(field);
             if (field.isUniq()) {
-                uniqDataMap.put(field.getName(), new HashSet<>());
+                UNIQ_DATA_MAP.put(field.getName(), new HashSet<>());
             }
         }
         dbTableFields = fields;
@@ -188,19 +189,27 @@ public class ExcelUtils {
         if (field.isUniq() && isUniqCellData(field, cellData)) {
             return null;
         }
+        cellData = checkIntValue(field, cellData);
         return cellData.isEmpty() ? field.getDefValue() : cellData;
     }
 
+    private static String checkIntValue(Field field, String value) {
+        if ((Arrays.asList(TYPES).contains(field.getType())) && (value.contains(".0"))) {
+            return value.substring(0, value.indexOf("."));
+        }
+        return value;
+    }
+
     private static boolean isUniqCellData(Field field, String cellData) {
-        if (field.isUniq() && uniqDataMap.get(field.getName()).contains(cellData)) {
+        if (field.isUniq() && UNIQ_DATA_MAP.get(field.getName()).contains(cellData)) {
             String message = "Не уникальное значение: " + cellData + " в поле: " + field.getName();
             log.log(Level.DEBUG, message);
             System.out.println(message);
             return true;
         } else if (field.isUniq()) {
-            Set<String> uniqValues = uniqDataMap.get(field.getName());
+            Set<String> uniqValues = UNIQ_DATA_MAP.get(field.getName());
             uniqValues.add(cellData);
-            uniqDataMap.put(field.getName(), uniqValues);
+            UNIQ_DATA_MAP.put(field.getName(), uniqValues);
         }
         return false;
     }
