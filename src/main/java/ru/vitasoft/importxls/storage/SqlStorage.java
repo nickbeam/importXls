@@ -11,6 +11,7 @@ import ru.vitasoft.importxls.util.ExcelUtils;
 import java.sql.Date;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
+import java.sql.Types;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -41,33 +42,39 @@ public class SqlStorage {
             sqlHelper.transactionalExecute(conn -> {
                 try (PreparedStatement ps = conn.prepareStatement("INSERT INTO " + tableName + " (" + ExcelUtils.getFieldsStr() + ") VALUES (" + ExcelUtils.getParamsStr() + ")")) {
                     for (int i = 1; i <= row.size(); i++) {
+                        String cellValue = row.get(i - 1).trim();
                         switch (getFieldType(fields, i)) {
                             case "smallint":
-                                ps.setShort(i, getShort(row, i));
+                                ps.setShort(i, getShort(cellValue));
                                 break;
                             case "int":
                             case "serial":
                             case "integer":
                             case "bigserial":
                             case "bigint":
-                                ps.setInt(i, getInteger(row, i));
+                                ps.setInt(i, getInteger(cellValue));
                                 break;
                             case "int8":
-                                ps.setLong(i, getLong(row, i));
+                                ps.setLong(i, getLong(cellValue));
                                 break;
                             case "float":
                             case "smallfloat":
                             case "double":
-                                ps.setDouble(i, getDouble(row, i));
+                                ps.setDouble(i, getDouble(cellValue));
                                 break;
                             case "date":
-                                ps.setDate(i, getDate(row, i));
+                                Date date = getDate(cellValue);
+                                if (date == null) {
+                                    ps.setNull(i, Types.DATE);
+                                    break;
+                                }
+                                ps.setDate(i, date);
                                 break;
                             case "datetime":
-                                //ps.setTimestamp(i, getTimeStamp(row, i));
+                                //ps.setTimestamp(i, getTimeStamp(cellValue));
                                 break;
                             case "boolean":
-                                ps.setBoolean(i, getBoolean(row, i));
+                                ps.setBoolean(i, getBoolean(cellValue));
                                 break;
                             case "char":
                             case "text":
@@ -96,31 +103,28 @@ public class SqlStorage {
         return str != null && str.matches("[0-9.]+");
     }
 
-    private Date getDate(List<String> row, int i) {
-        return DateTimeUtils.getDate(row.get(i - 1));
+    private Date getDate(String str) {
+        return str.isEmpty() ? null : DateTimeUtils.getDate(str);
     }
 
-    private Boolean getBoolean(List<String> row, int i) {
-        if (isNumeric(row.get(i - 1).trim())) {
-            return Integer.parseInt(row.get(i - 1).trim()) == 1;
-        }
-        return row.get(i - 1).contains("true");
+    private Boolean getBoolean(String str) {
+        return isNumeric(str) ? Integer.parseInt(str) == 1 :str.contains("true");
     }
 
-    private Short getShort(List<String> row, int i) {
-        return isNumeric(row.get(i - 1).trim()) ? Short.parseShort(row.get(i - 1).trim()) : 0;
+    private Short getShort(String str) {
+        return isNumeric(str) ? Short.parseShort(str) : 0;
     }
 
-    private Integer getInteger(List<String> row, int i) {
-        return isNumeric(row.get(i - 1).trim()) ? Integer.parseInt(row.get(i - 1).trim()) : 0;
+    private Integer getInteger(String str) {
+        return isNumeric(str) ? Integer.parseInt(str) : 0;
     }
 
-    private Long getLong(List<String> row, int i) {
-        return isNumeric(row.get(i - 1).trim()) ? Long.parseLong(row.get(i - 1).trim()) : 0;
+    private Long getLong(String str) {
+        return isNumeric(str) ? Long.parseLong(str) : 0;
     }
 
-    private Double getDouble(List<String> row, int i) {
-        return isNumeric(row.get(i - 1).trim()) ? Double.parseDouble(row.get(i - 1).trim()) : 0;
+    private Double getDouble(String str) {
+        return isNumeric(str) ? Double.parseDouble(str) : 0;
     }
 
     private String getFieldType(List<Field> fields, int i) {

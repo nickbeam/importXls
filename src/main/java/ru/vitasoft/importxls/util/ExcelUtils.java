@@ -4,6 +4,7 @@ import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.DateUtil;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import ru.vitasoft.importxls.model.Field;
@@ -174,6 +175,10 @@ public class ExcelUtils {
                 case BLANK:
                     return field.getRequired() ? null : field.getDefValue();
                 case NUMERIC:
+                    if (DateUtil.isCellDateFormatted(cell)) {
+                        cellData = cell.getDateCellValue().toString();
+                        break;
+                    }
                     cellData = Double.toString(cell.getNumericCellValue());
                     break;
                 case BOOLEAN:
