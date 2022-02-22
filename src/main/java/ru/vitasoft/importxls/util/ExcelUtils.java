@@ -7,6 +7,7 @@ import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.DateUtil;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.util.NumberToTextConverter;
 import ru.vitasoft.importxls.model.Field;
 
 import java.util.*;
@@ -22,7 +23,6 @@ public class ExcelUtils {
     private static List<Field> dbTableFields = new ArrayList<>();
     private static String fieldsStr = "";
     private static String paramsStr = "";
-    private static final String[] TYPES = {"smallint", "int", "int8", "serial", "integer", "bigserial", "bigint"};
     private static List<List<String>> dbTableData = new ArrayList<>();
     private static final Map<String, Set<String>> UNIQ_DATA_MAP = new HashMap<>();
     private static final Logger log = LogManager.getLogger();
@@ -179,7 +179,7 @@ public class ExcelUtils {
                         cellData = cell.getDateCellValue().toString();
                         break;
                     }
-                    cellData = Double.toString(cell.getNumericCellValue());
+                    cellData = NumberToTextConverter.toText(cell.getNumericCellValue());
                     break;
                 case BOOLEAN:
                     cellData = Boolean.toString(cell.getBooleanCellValue());
@@ -194,15 +194,7 @@ public class ExcelUtils {
         if (field.isUniq() && isUniqCellData(field, cellData)) {
             return null;
         }
-        cellData = checkIntValue(field, cellData);
         return cellData.isEmpty() ? field.getDefValue() : cellData;
-    }
-
-    private static String checkIntValue(Field field, String value) {
-        if ((Arrays.asList(TYPES).contains(field.getType())) && (value.contains(".0"))) {
-            return value.substring(0, value.indexOf("."));
-        }
-        return value;
     }
 
     private static boolean isUniqCellData(Field field, String cellData) {
