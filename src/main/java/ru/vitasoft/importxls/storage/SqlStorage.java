@@ -45,22 +45,42 @@ public class SqlStorage {
                         String cellValue = row.get(i - 1).trim();
                         switch (getFieldType(fields, i)) {
                             case "smallint":
-                                ps.setShort(i, getShort(cellValue));
+                                Short shortValue = getShort(cellValue);
+                                if (shortValue == null) {
+                                    ps.setNull(i, Types.SMALLINT);
+                                    break;
+                                }
+                                ps.setShort(i, shortValue);
                                 break;
                             case "int":
                             case "serial":
                             case "integer":
                             case "bigserial":
                             case "bigint":
-                                ps.setInt(i, getInteger(cellValue));
+                                Integer intValue = getInteger(cellValue);
+                                if (intValue == null) {
+                                    ps.setNull(i, Types.INTEGER);
+                                    break;
+                                }
+                                ps.setInt(i, intValue);
                                 break;
                             case "int8":
-                                ps.setLong(i, getLong(cellValue));
+                                Long longValue = getLong(cellValue);
+                                if (longValue == null) {
+                                    ps.setNull(i, Types.BIGINT);
+                                    break;
+                                }
+                                ps.setLong(i, longValue);
                                 break;
                             case "float":
                             case "smallfloat":
                             case "double":
-                                ps.setDouble(i, getDouble(cellValue));
+                                Double doubleValue = getDouble(cellValue);
+                                if (doubleValue == null) {
+                                    ps.setNull(i, Types.DOUBLE);
+                                    break;
+                                }
+                                ps.setDouble(i, doubleValue);
                                 break;
                             case "date":
                                 Date date = getDate(cellValue);
@@ -112,19 +132,19 @@ public class SqlStorage {
     }
 
     private Short getShort(String str) {
-        return isNumeric(str) ? Short.parseShort(str) : 0;
+        return isNumeric(str) ? Short.parseShort(str) : null;
     }
 
     private Integer getInteger(String str) {
-        return isNumeric(str) ? Integer.parseInt(str) : 0;
+        return isNumeric(str) ? Integer.parseInt(str) : null;
     }
 
     private Long getLong(String str) {
-        return isNumeric(str) ? Long.parseLong(str) : 0;
+        return isNumeric(str) ? Long.parseLong(str) : null;
     }
 
     private Double getDouble(String str) {
-        return isNumeric(str) ? Double.parseDouble(str) : 0;
+        return isNumeric(str) ? Double.parseDouble(str) : null;
     }
 
     private String getFieldType(List<Field> fields, int i) {
