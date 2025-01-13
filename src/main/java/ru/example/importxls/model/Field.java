@@ -1,4 +1,4 @@
-package ru.vitasoft.importxls.model;
+package ru.example.importxls.model;
 
 public class Field {
     private String name;

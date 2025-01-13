@@ -1,4 +1,4 @@
-package ru.vitasoft.importxls.exception;
+package ru.example.importxls.exception;
 
 public class StorageException extends RuntimeException {
     public StorageException(Exception e) {

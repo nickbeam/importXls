@@ -1,4 +1,4 @@
-package ru.vitasoft.importxls.util;
+package ru.example.importxls.util;
 
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
@@ -8,7 +8,7 @@ import org.apache.poi.ss.usermodel.DateUtil;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.util.NumberToTextConverter;
-import ru.vitasoft.importxls.model.Field;
+import ru.example.importxls.model.Field;
 
 import java.util.*;
 
@@ -140,7 +140,7 @@ public class ExcelUtils {
         try {
             cellData = cell.getStringCellValue();
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error(e.getMessage());
         }
         return cellData;
     }
@@ -155,7 +155,7 @@ public class ExcelUtils {
         try {
             cellData = cell.getStringCellValue();
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error(e.getMessage());
         }
         return cellData.toLowerCase().contains("да");
     }
@@ -189,7 +189,7 @@ public class ExcelUtils {
                     break;
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error(e.getMessage());
         }
         if (field.isUniq() && isUniqCellData(field, cellData)) {
             return null;
