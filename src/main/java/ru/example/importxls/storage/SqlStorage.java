@@ -1,12 +1,12 @@
-package ru.vitasoft.importxls.storage;
+package ru.example.importxls.storage;
 
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import ru.vitasoft.importxls.model.Field;
-import ru.vitasoft.importxls.sql.SqlHelper;
-import ru.vitasoft.importxls.util.DateTimeUtils;
-import ru.vitasoft.importxls.util.ExcelUtils;
+import ru.example.importxls.model.Field;
+import ru.example.importxls.util.ExcelUtils;
+import ru.example.importxls.sql.SqlHelper;
+import ru.example.importxls.util.DateTimeUtils;
 
 import java.sql.Date;
 import java.sql.DriverManager;

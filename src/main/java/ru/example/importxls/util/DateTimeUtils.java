@@ -1,4 +1,4 @@
-package ru.vitasoft.importxls.util;
+package ru.example.importxls.util;
 
 import java.sql.Date;
 import java.time.LocalDate;
